@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DarkPlayerJS Studio - Chuyên Trị Server Cứng Đầu</title>
+  <link rel="stylesheet" href="./darkplayer.css">
+  <style>
+    :root {
+      --bg-page: #0b0e17;
+      --bg-surface: #121727;
+      --bg-card: #181f34;
+      --bg-card-hover: #222b49;
+      --border-color: #2a3454;
+      --accent: #6366f1;
+      --accent-hover: #4f46e5;
+      --text-main: #f8fafc;
+      --text-dim: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Notice Banner for file:// vs http:// */
+    .protocol-banner {
+      background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+      color: #000;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 10px 24px;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .protocol-banner a {
+      color: #000;
+      text-decoration: underline;
+      background: rgba(255, 255, 255, 0.4);
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    /* Header */
+    header {
+      background: linear-gradient(135deg, #181a38 0%, #0c0e1a 100%);
+      border-bottom: 1px solid var(--border-color);
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 15px rgba(99, 102, 241, 0.6);
+    }
+
+    .brand-logo svg {
+      width: 20px;
+      height: 20px;
+      fill: #fff;
+    }
+
+    .brand-title {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      background: linear-gradient(90deg, #fff 0%, #a5b4fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-tagline {
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .bridge-status-pill {
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #34d399;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .bridge-status-pill.offline {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #f87171;
+    }
+
+    /* Layout */
+    main {
+      flex: 1;
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: 24px;
+    }
+
+    @media (max-width: 1024px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .player-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .player-wrapper {
+      width: 100%;
+      background-color: #000;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+    }
+
+    /* Control & Preset Panel */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-title svg {
+      width: 16px;
+      height: 16px;
+      fill: var(--accent);
+    }
+
+    /* Input & Forms */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-dim);
+    }
+
+    input[type="text"],
+    select.form-control {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
+    }
+
+    input[type="text"]:focus,
+    select.form-control:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+    }
+
+    /* RULE COMPLIANCE: Explicit Styling for Select Options in Dark Mode */
+    select.form-control option {
+      background-color: #181f34 !important;
+      color: #f8fafc !important;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+      color: #fff;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.95;
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+
+    /* Presets List */
+    .preset-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 250px;
+      overflow-y: auto;
+    }
+
+    .preset-item {
+      background-color: var(--bg-card);
+      border: 1px solid transparent;
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      transition: all 0.15s ease;
+    }
+
+    .preset-item:hover {
+      background-color: var(--bg-card-hover);
+      border-color: var(--accent);
+    }
+
+    .preset-item.active {
+      border-color: var(--accent);
+      background-color: var(--bg-card-hover);
+    }
+
+    .preset-item-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #e2e8f0;
+    }
+
+    .preset-item-desc {
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    /* Stats Box */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .stat-box {
+      background-color: var(--bg-card);
+      padding: 8px 10px;
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .stat-label {
+      font-size: 10px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .stat-value {
+      font-size: 13px;
+      font-weight: 700;
+      color: #38bdf8;
+    }
+
+    /* Feature Badges */
+    .feature-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tag {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 6px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.06);
+      color: #cbd5e1;
+    }
+
+    .tag.highlight {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Banner for file:// Protocol Warning -->
+  <div class="protocol-banner" id="protocol-banner">
+    <span>⚠️ Bạn đang mở qua giao thức <code>file://</code> (Trình duyệt chặn CORS trên file://). Để phát mượt mà các server chống hotlink, vui lòng mở:</span>
+    <a href="http://localhost:5050" target="_blank">Mở http://localhost:5050</a>
+  </div>
+
+  <header>
+    <div class="brand">
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
+      </div>
+      <div>
+        <div class="brand-title">DarkPlayerJS Studio</div>
+        <div class="brand-tagline">Engine giải mã & phát stream chuyên trị server cứng đầu</div>
+      </div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <a href="swagger.html" class="tag" style="text-decoration: none; padding: 6px 12px; font-weight: 700; color: #38bdf8; background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 20px; display: inline-flex; align-items: center; gap: 5px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        Swagger API
+      </a>
+      <div class="bridge-status-pill" id="bridge-status">
+        <span style="font-size: 8px;">●</span> <span>STREAMING BRIDGE: HTTP 5050</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Left Column: Video Player & Stream Details -->
+    <div class="player-section">
+      <div class="player-wrapper">
+        <div id="player-container"></div>
+      </div>
+
+      <!-- Live Stream Diagnostics -->
+      <div class="card">
+        <div class="card-title">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+          Thông Số Luồng Thời Gian Thực
+        </div>
+        <div class="stat-grid">
+          <div class="stat-box">
+            <span class="stat-label">Độ phân giải</span>
+            <span class="stat-value" id="stat-resolution">-</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">Buffer đã nạp</span>
+            <span class="stat-value" id="stat-buffered">0.0s</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">Audio Preamp Boost</span>
+            <span class="stat-value" id="stat-boost">100%</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">Trạng thái Sync TS</span>
+            <span class="stat-value" style="color: #10b981;">0x47 Verified</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Controls & Presets -->
+    <div class="sidebar">
+      <!-- Input Source Card -->
+      <div class="card">
+        <div class="card-title">
+          <svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/></svg>
+          Nạp Nguồn Phát (URL / Hash / Local MP4)
+        </div>
+
+        <div class="form-group">
+          <label>Đường dẫn M3U8, Embed URL, Video Hash hoặc tên file:</label>
+          <input type="text" id="input-url" placeholder="d1d16497e4352612c587bdb6cf655117 hoặc Bay_Vao_Tim_Anh_Tap_1_ThuyetMinh.mp4" value="d1d16497e4352612c587bdb6cf655117">
+        </div>
+
+        <button class="btn-primary" id="btn-load">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          Phát Luồng Ngay
+        </button>
+      </div>
+
+      <!-- Local Completed Videos Card -->
+      <div class="card" id="local-videos-card">
+        <div class="card-title">
+          <svg viewBox="0 0 24 24"><path d="M19 4H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H5V8h14v10z"/></svg>
+          Video Đã Tải Về Máy (Local MP4)
+        </div>
+        <div class="preset-list" id="local-videos-list">
+          <div style="font-size: 12px; color: var(--text-dim);">Đang nạp danh sách tệp...</div>
+        </div>
+      </div>
+
+      <!-- Presets for Stubborn Streams -->
+      <div class="card">
+        <div class="card-title">
+          <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+          Mẫu Thử Server Cứng Đầu (Online Presets)
+        </div>
+
+        <div class="preset-list">
+          <div class="preset-item active" data-target="d1d16497e4352612c587bdb6cf655117">
+            <div class="preset-item-title">Bay Vào Tim Anh - Tập 1 (Online HLS)</div>
+            <div class="preset-item-desc">Server jps14 CDN • 324 phân đoạn TS ngụy trang .png</div>
+            <div class="feature-tags" style="margin-top: 4px;">
+              <span class="tag highlight">1080p</span>
+              <span class="tag">Bridge Proxy</span>
+              <span class="tag">Anti-Hotlink</span>
+            </div>
+          </div>
+
+          <div class="preset-item" data-target="43b7b91b2be20127e38cc0814a0e3c0d">
+            <div class="preset-item-title">Bay Vào Tim Anh - Tập 2 (Online HLS)</div>
+            <div class="preset-item-desc">Thuyết minh #1 • Hash StreamC CDN</div>
+            <div class="feature-tags" style="margin-top: 4px;">
+              <span class="tag highlight">1080p</span>
+              <span class="tag">StreamC</span>
+            </div>
+          </div>
+
+          <div class="preset-item" data-target="https://upload18.org/play/index/ssni-888-uncensored-leak">
+            <div class="preset-item-title">AVDB Stream: SSNI-888 (Upload18 / Helvid)</div>
+            <div class="preset-item-desc">518K+ Database • CDN helvid.com qua Streaming Bridge</div>
+            <div class="feature-tags" style="margin-top: 4px;">
+              <span class="tag highlight">AVDB API</span>
+              <span class="tag">Helvid CDN</span>
+              <span class="tag">Uncensored</span>
+            </div>
+          </div>
+
+          <div class="preset-item" data-target="https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8">
+            <div class="preset-item-title">Big Buck Bunny (Standard Test)</div>
+            <div class="preset-item-desc">Multi-bitrate HLS chuẩn quốc tế để test Controls</div>
+            <div class="feature-tags" style="margin-top: 4px;">
+              <span class="tag">Multi-rate</span>
+              <span class="tag">Standard</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Load DarkPlayer Library -->
+  <script src="./darkplayer.js"></script>
+  <script>
+    let player = null;
+
+    // Check if opened via file:// protocol
+    if (window.location.protocol === 'file:') {
+      document.getElementById('protocol-banner').style.display = 'flex';
+      const pill = document.getElementById('bridge-status');
+      pill.innerHTML = '<span>●</span> <span>Mở qua file:// (Cần mở http://localhost:5050)</span>';
+      pill.classList.add('offline');
+    }
+
+    function initPlayer(source) {
+      if (player) {
+        player.destroy();
+      }
+
+      player = new DarkPlayer('#player-container', {
+        src: source,
+        autoplay: true,
+        stallRecovery: true
+      });
+
+      // Hook diagnostics
+      player.video.addEventListener('loadedmetadata', () => {
+        document.getElementById('stat-resolution').textContent = `${player.video.videoWidth}x${player.video.videoHeight}`;
+      });
+
+      player.video.addEventListener('timeupdate', () => {
+        if (player.video.buffered.length > 0) {
+          const bufEnd = player.video.buffered.end(player.video.buffered.length - 1);
+          const bufferedSec = Math.max(0, bufEnd - player.video.currentTime);
+          document.getElementById('stat-buffered').textContent = `${bufferedSec.toFixed(1)}s`;
+        }
+      });
+
+      if (player.boostSelect) {
+        player.boostSelect.addEventListener('change', () => {
+          const mult = parseFloat(player.boostSelect.value || 1.0);
+          document.getElementById('stat-boost').textContent = `${Math.round(mult * 100)}%`;
+        });
+      }
+    }
+
+    // Load Local Completed Videos from Server
+    async function loadLocalVideos() {
+      const listEl = document.getElementById('local-videos-list');
+      const bridgeHost = window.location.protocol === 'file:' ? 'http://localhost:5050' : window.location.origin;
+      try {
+        const res = await fetch(`${bridgeHost}/api/local-videos`);
+        const data = await res.json();
+        if (data.success && data.videos.length > 0) {
+          listEl.innerHTML = '';
+          data.videos.forEach(v => {
+            const item = document.createElement('div');
+            item.className = 'preset-item';
+            item.setAttribute('data-target', v.name);
+            item.innerHTML = `
+              <div class="preset-item-title">${v.name}</div>
+              <div class="preset-item-desc">Dung lượng: ${v.sizeMB} MB • Phát cục bộ không giật lag</div>
+              <div class="feature-tags" style="margin-top: 4px;">
+                <span class="tag highlight">MP4 Cục bộ</span>
+                <span class="tag">Range 206 Seek</span>
+              </div>
+            `;
+            item.addEventListener('click', () => {
+              document.querySelectorAll('.preset-item').forEach(i => i.classList.remove('active'));
+              item.classList.add('active');
+              document.getElementById('input-url').value = v.name;
+              initPlayer(v.name);
+            });
+            listEl.appendChild(item);
+          });
+        } else {
+          listEl.innerHTML = '<div style="font-size: 12px; color: var(--text-dim);">Chưa có tệp video nào trong thư mục tải.</div>';
+        }
+      } catch (e) {
+        listEl.innerHTML = '<div style="font-size: 12px; color: #f87171;">Không thể kết nối Bridge Server (Hãy chạy start_darkplayer.cmd).</div>';
+      }
+    }
+
+    // Initial Load
+    const defaultHash = 'd1d16497e4352612c587bdb6cf655117';
+    initPlayer(defaultHash);
+    loadLocalVideos();
+
+    // Button Load Event
+    document.getElementById('btn-load').addEventListener('click', () => {
+      const val = document.getElementById('input-url').value.trim();
+      if (val) {
+        initPlayer(val);
+      }
+    });
+
+    // Preset Items Click
+    document.querySelectorAll('.preset-item').forEach(item => {
+      item.addEventListener('click', () => {
+        document.querySelectorAll('.preset-item').forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+        const target = item.getAttribute('data-target');
+        document.getElementById('input-url').value = target;
+        initPlayer(target);
+      });
+    });
+  </script>
+</body>
+</html>

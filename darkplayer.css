@@ -1,0 +1,692 @@
+/**
+ * DarkPlayerJS - YouTube Red & Dark Minimalist UI Theme (Exact Screenshot Match)
+ * Authentic YouTube-grade layout, controls, animations, top overlay, and typography.
+ */
+
+:root {
+  --yt-red: #ff0000;
+  --yt-red-hover: #cc0000;
+  --yt-white: #ffffff;
+  --yt-text-primary: #f1f1f1;
+  --yt-text-secondary: #aaaaaa;
+  --yt-bg-overlay: rgba(0, 0, 0, 0.82);
+  --yt-menu-bg: rgba(28, 28, 28, 0.96);
+  --yt-menu-item-hover: rgba(255, 255, 255, 0.12);
+  --yt-border: rgba(255, 255, 255, 0.15);
+  --yt-buffer: rgba(255, 255, 255, 0.4);
+  --yt-blue-pip: #2563eb;
+  --yt-blue-pip-hover: #1d4ed8;
+}
+
+/* Player Container */
+.darkplayer-container {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  background-color: #000;
+  overflow: hidden;
+  font-family: "Roboto", "Segoe UI", Arial, sans-serif;
+  user-select: none;
+  border-radius: 12px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.7);
+  aspect-ratio: 16 / 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+}
+
+.darkplayer-container.theater-mode {
+  max-width: 100vw !important;
+  width: 100% !important;
+  border-radius: 0;
+  max-height: 80vh;
+}
+
+.darkplayer-container:-webkit-full-screen,
+.darkplayer-container:fullscreen {
+  width: 100vw;
+  height: 100vh;
+  border-radius: 0;
+}
+
+.darkplayer-video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* ==========================================================
+   TOP BAR OVERLAY (Channel Avatar, Name, Blue PiP Button)
+   ========================================================== */
+.darkplayer-top-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 15;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.3) 60%, transparent 100%);
+  opacity: 1;
+  transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s ease;
+  pointer-events: auto;
+}
+
+.darkplayer-container.user-inactive.playing .darkplayer-top-overlay {
+  opacity: 0;
+  transform: translateY(-8px);
+  pointer-events: none;
+}
+
+.darkplayer-top-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.darkplayer-avatar-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+}
+
+.darkplayer-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.darkplayer-top-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.darkplayer-top-title {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+  max-width: 380px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.darkplayer-top-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.darkplayer-channel-name {
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* Blue PiP Button on Top Right */
+.darkplayer-top-pip-btn {
+  background-color: var(--yt-blue-pip);
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 5px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.5);
+  transition: background-color 0.15s ease, transform 0.15s ease;
+  position: relative;
+}
+
+.darkplayer-top-pip-btn:hover {
+  background-color: var(--yt-blue-pip-hover);
+  transform: scale(1.04);
+}
+
+.darkplayer-top-pip-btn:active {
+  transform: scale(0.96);
+}
+
+.darkplayer-top-pip-btn svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+}
+
+/* ==========================================================
+   CENTER SPINNER, BIG PLAY & ACTION RIPPLES
+   ========================================================== */
+.darkplayer-loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.darkplayer-loader.active {
+  display: flex;
+}
+
+.darkplayer-spinner {
+  width: 52px;
+  height: 52px;
+  border: 4px solid rgba(255, 255, 255, 0.2);
+  border-top-color: var(--yt-red);
+  border-radius: 50%;
+  animation: yt-spin 0.75s linear infinite;
+}
+
+@keyframes yt-spin {
+  to { transform: rotate(360deg); }
+}
+
+.darkplayer-big-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 68px;
+  height: 48px;
+  background-color: rgba(33, 33, 33, 0.85);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 6;
+  transition: background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1), transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.darkplayer-big-play:hover {
+  background-color: var(--yt-red);
+  transform: translate(-50%, -50%) scale(1.08);
+}
+
+.darkplayer-big-play svg {
+  width: 24px;
+  height: 24px;
+  fill: #fff;
+}
+
+.darkplayer-container.playing .darkplayer-big-play {
+  display: none;
+}
+
+.darkplayer-action-ripple {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.6);
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 15;
+  transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+.darkplayer-action-ripple.animate {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+.darkplayer-action-ripple svg {
+  width: 32px;
+  height: 32px;
+  fill: #fff;
+}
+
+.darkplayer-seek-ripple {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 35%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 14;
+  transition: opacity 0.25s ease;
+}
+
+.darkplayer-seek-ripple.left { left: 0; }
+.darkplayer-seek-ripple.right { right: 0; }
+.darkplayer-seek-ripple.show { opacity: 1; }
+
+.darkplayer-seek-ripple-text {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  margin-top: 6px;
+}
+
+/* Toast Banner */
+.darkplayer-toast {
+  position: absolute;
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(28, 28, 28, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--yt-white);
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  z-index: 25;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  backdrop-filter: blur(8px);
+}
+
+.darkplayer-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(4px);
+}
+
+/* ==========================================================
+   BOTTOM CONTROLS OVERLAY (YouTube Gradient & Scrubber)
+   ========================================================== */
+.darkplayer-controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.4) 65%, transparent 100%);
+  padding: 16px 14px 8px;
+  z-index: 12;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  opacity: 1;
+  transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s ease;
+}
+
+.darkplayer-container.user-inactive.playing .darkplayer-controls {
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+}
+
+/* YouTube Scrubber / Progress Bar */
+.darkplayer-timeline-container {
+  position: relative;
+  width: 100%;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.darkplayer-timeline-track {
+  position: relative;
+  width: 100%;
+  height: 3px;
+  background-color: rgba(255, 255, 255, 0.25);
+  border-radius: 1px;
+  transition: height 0.1s ease;
+}
+
+.darkplayer-timeline-container:hover .darkplayer-timeline-track {
+  height: 5px;
+}
+
+.darkplayer-timeline-buffered {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: var(--yt-buffer);
+  width: 0%;
+}
+
+.darkplayer-timeline-played {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: var(--yt-red);
+  width: 0%;
+}
+
+.darkplayer-timeline-thumb {
+  position: absolute;
+  top: 50%;
+  right: -6px;
+  transform: translateY(-50%) scale(0);
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--yt-red);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+  transition: transform 0.1s ease;
+}
+
+.darkplayer-timeline-container:hover .darkplayer-timeline-thumb,
+.darkplayer-timeline-container.dragging .darkplayer-timeline-thumb {
+  transform: translateY(-50%) scale(1);
+}
+
+/* Scrubber Hover Tooltip */
+.darkplayer-tooltip {
+  position: absolute;
+  bottom: 24px;
+  transform: translateX(-50%);
+  background: rgba(28, 28, 28, 0.95);
+  border-radius: 4px;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  pointer-events: none;
+  display: none;
+  white-space: nowrap;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+
+/* ==========================================================
+   BUTTONS ROW & CONTROL GROUPS
+   ========================================================== */
+.darkplayer-btn-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 40px;
+}
+
+.darkplayer-btn-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.darkplayer-btn {
+  background: transparent;
+  border: none;
+  color: var(--yt-white);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: opacity 0.1s, transform 0.1s;
+  position: relative;
+}
+
+.darkplayer-btn:hover {
+  opacity: 0.88;
+}
+
+.darkplayer-btn:active {
+  transform: scale(0.92);
+}
+
+.darkplayer-btn svg {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+}
+
+/* ==========================================================
+   YOUTUBE AUTHENTIC TOOLTIP BADGE (EXACT LIKE SCREENSHOT)
+   ========================================================== */
+[data-yt-tooltip] {
+  position: relative;
+}
+
+[data-yt-tooltip]::after {
+  content: attr(data-yt-tooltip);
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(28, 28, 28, 0.94);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 5px 9px;
+  border-radius: 4px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 50;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-yt-tooltip]:hover::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(-2px);
+}
+
+/* ==========================================================
+   TIME PILL BADGE (MATCHING SCREENSHOT 7:46:53 / 8:05:56)
+   ========================================================== */
+.darkplayer-time {
+  background: rgba(0, 0, 0, 0.58);
+  border-radius: 12px;
+  padding: 3px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--yt-white);
+  margin-left: 8px;
+  font-feature-settings: "tnum";
+  font-variant-numeric: tabular-nums;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  letter-spacing: 0.3px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.darkplayer-time-current {
+  color: var(--yt-white);
+}
+
+.darkplayer-time-separator {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.darkplayer-time-total {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* Volume Slider Group */
+.darkplayer-volume-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.darkplayer-volume-slider {
+  width: 0;
+  opacity: 0;
+  height: 3px;
+  transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
+  accent-color: var(--yt-white);
+  cursor: pointer;
+}
+
+.darkplayer-volume-group:hover .darkplayer-volume-slider {
+  width: 56px;
+  opacity: 1;
+}
+
+/* ==========================================================
+   YOUTUBE AUTOPLAY SWITCH TOGGLE
+   ========================================================== */
+.darkplayer-autoplay-btn {
+  width: 44px;
+  padding: 0;
+}
+
+.darkplayer-toggle-track {
+  width: 34px;
+  height: 14px;
+  background-color: rgba(255, 255, 255, 0.35);
+  border-radius: 7px;
+  position: relative;
+  transition: background-color 0.2s;
+}
+
+.darkplayer-toggle-track.active {
+  background-color: rgba(255, 0, 0, 0.5);
+}
+
+.darkplayer-toggle-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s;
+}
+
+.darkplayer-toggle-thumb svg {
+  width: 8px;
+  height: 8px;
+  fill: #111;
+  transition: fill 0.2s;
+}
+
+.darkplayer-toggle-track.active .darkplayer-toggle-thumb {
+  transform: translateX(20px);
+  background-color: var(--yt-red);
+}
+
+.darkplayer-toggle-track.active .darkplayer-toggle-thumb svg {
+  fill: #ffffff;
+}
+
+/* Subtitles / CC Button Active Indicator */
+.darkplayer-cc-btn.active::before {
+  content: '';
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 16px;
+  height: 2.5px;
+  background-color: var(--yt-red);
+  border-radius: 2px;
+}
+
+/* ==========================================================
+   SETTINGS POPUP MENU
+   ========================================================== */
+.darkplayer-settings-menu {
+  position: absolute;
+  bottom: 58px;
+  right: 14px;
+  width: 270px;
+  background-color: var(--yt-menu-bg);
+  border-radius: 12px;
+  border: 1px solid var(--yt-border);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.7);
+  padding: 8px 0;
+  z-index: 30;
+  display: none;
+  flex-direction: column;
+  backdrop-filter: blur(14px);
+  animation: yt-menu-fade 0.15s ease;
+}
+
+@keyframes yt-menu-fade {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.darkplayer-settings-menu.active {
+  display: flex;
+}
+
+.darkplayer-menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  font-size: 13px;
+  color: var(--yt-text-primary);
+  cursor: pointer;
+  transition: background-color 0.1s;
+}
+
+.darkplayer-menu-item:hover {
+  background-color: var(--yt-menu-item-hover);
+}
+
+.darkplayer-menu-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.darkplayer-menu-value {
+  font-size: 12px;
+  color: var(--yt-text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Custom Select Dropdowns in Dark Mode */
+select.darkplayer-yt-select,
+.darkplayer-yt-select {
+  background-color: #212121 !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  outline: none;
+  cursor: pointer;
+}
+
+/* RULE COMPLIANCE: Explicit Styling for Select Options in Dark Mode */
+select.darkplayer-yt-select option,
+.darkplayer-yt-select option {
+  background-color: #212121 !important;
+  color: #ffffff !important;
+}

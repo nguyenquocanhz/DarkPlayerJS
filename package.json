@@ -1,0 +1,32 @@
+{
+  "name": "darkplayerjs",
+  "version": "1.0.0",
+  "description": "Cyberpunk Resilient Video Player Engine for Stubborn Streaming Servers (HLS, Anti-Hotlink, AES-GCM, Web Crypto, Web Audio Preamp)",
+  "main": "darkplayer.js",
+  "style": "darkplayer.css",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node -c darkplayer.js"
+  },
+  "keywords": [
+    "hls",
+    "video-player",
+    "m3u8",
+    "streamc",
+    "web-crypto",
+    "aes-gcm",
+    "audio-boost",
+    "resilient-player",
+    "cyberpunk-ui"
+  ],
+  "author": "Nguyen Quoc Anh <nguyenquocanhz>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nguyenquocanhz/DarkPlayerJS.git"
+  },
+  "homepage": "https://github.com/nguyenquocanhz/DarkPlayerJS#readme",
+  "bugs": {
+    "url": "https://github.com/nguyenquocanhz/DarkPlayerJS/issues"
+  }
+}
