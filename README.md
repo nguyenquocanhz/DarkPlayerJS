@@ -20,6 +20,8 @@
 - 🎨 **Giao diện Cyberpunk Neon HUD**: Thiết kế Dark Mode hiện đại, hiệu ứng neon glow tím / xanh dương, thanh điều khiển thông minh tự ẩn, hỗ trợ phím tắt chuẩn desktop.
 - 📦 **Zero External Runtime Dependencies**: Hoạt động độc lập không cần nạp thêm jQuery hay bất kỳ thư viện cồng kềnh nào.
 
+📖 **Tài liệu kiến trúc chuyên sâu**: Xem ngay [Tài Liệu Phương Án Xử Lý Luồng (Pipeline Architecture)](PIPELINE_ARCHITECTURE.md) để hiểu rõ từng tầng xử lý giải mã, vượt rào CDN và âm thanh.
+
 ---
 
 ## 🚀 Cài Đặt & Sử Dụng Nhanh (Quick Start)
