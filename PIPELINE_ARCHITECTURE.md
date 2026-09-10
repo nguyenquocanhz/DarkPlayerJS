@@ -14,13 +14,13 @@ flowchart TD
     A["Đầu Vào Đa Hình Thức<br/>(Video Hash / Token StreamC / Link M3U8 / Local MP4)"] --> B{"Phân Loại Nguồn"}
 
     %% Nhánh MP4
-    B -->|Local / Direct MP4| C["HTML5 Video Direct Feed<br/>(HTTP 206 Partial Content)"]
+    B -->|"Local hoặc Direct MP4"| C["HTML5 Video Direct Feed<br/>(HTTP 206 Partial Content)"]
 
     %% Nhánh Hash / Token
-    B -->|32-Char MD5 Hash| D["Ánh xạ CDN Endpoint<br/>jps14.hihihoho4.top/{hash}/hls.m3u8"]
-    B -->|StreamC Token URL| E["DarkCrypto.decodeChunkedToken()<br/>(Ghép 4 Chunks Base64 -> Bóc JWT Inner)"]
-    B -->|Upload18 Embed| F["Trích xuất PLAYER_CONFIG<br/>lấy link m3u8 gốc"]
-    B -->|Direct M3U8| G["URL M3U8"]
+    B -->|"32-Char MD5 Hash"| D["Ánh xạ CDN Endpoint<br/>jps14.hihihoho4.top/{hash}/hls.m3u8"]
+    B -->|"StreamC Token URL"| E["DarkCrypto.decodeChunkedToken()<br/>(Ghép 4 Chunks Base64 -> Bóc JWT Inner)"]
+    B -->|"Upload18 Embed"| F["Trích xuất PLAYER_CONFIG<br/>lấy link m3u8 gốc"]
+    B -->|"Direct M3U8"| G["URL M3U8"]
 
     D --> H{"Kiểm Tra Host CDN"}
     E --> H
@@ -28,8 +28,8 @@ flowchart TD
     G --> H
 
     %% Tầng Network Proxy
-    H -->|Server có Anti-Hotlink / CORS| I["Streaming Bridge / Proxy<br/>(Referer Injection & M3U8 URL Rewriter)"]
-    H -->|CORS Mở / Không Hotlink| J["Tải Trực Tiếp"]
+    H -->|"Server có Anti-Hotlink hoặc CORS"| I["Streaming Bridge / Proxy<br/>(Referer Injection & M3U8 URL Rewriter)"]
+    H -->|"CORS Mở hoặc Không Hotlink"| J["Tải Trực Tiếp"]
 
     I --> K["HLS.js Core Engine"]
     J --> K
@@ -37,14 +37,14 @@ flowchart TD
     %% Custom Loaders
     K --> L["pLoader (Playlist Interceptor)"]
     L --> M{"Có Header #ENC-AESGCM?"}
-    M -->|Có| N["Web Crypto AES-GCM Decrypt<br/>(Key: kX, IV: Hex, Tag: 128-bit)"]
-    M -->|Không| O["Manifest Parsing (Levels / Bitrate)"]
+    M -->|"Có"| N["Web Crypto AES-GCM Decrypt<br/>(Key: kX, IV: Hex, Tag: 128-bit)"]
+    M -->|"Không"| O["Manifest Parsing (Levels / Bitrate)"]
     N --> O
 
     O --> P["fLoader (Fragment Interceptor)"]
     P --> Q{"Byte đầu == 0x47?"}
-    Q -->|Không (PNG Header Giả)| R["TS Sync-Byte Sanitizer<br/>(Cắt bỏ Header rác trước 0x47)"]
-    Q -->|Đúng (Chuẩn MPEG-TS)| S["MPEG-TS Demuxer"]
+    Q -->|"Không - PNG Header Giả"| R["TS Sync-Byte Sanitizer<br/>(Cắt bỏ Header rác trước 0x47)"]
+    Q -->|"Đúng - Chuẩn MPEG-TS"| S["MPEG-TS Demuxer"]
     R --> S
 
     %% Transmuxing & Playback
@@ -54,7 +54,7 @@ flowchart TD
 
     %% Stall Recovery & Audio
     V --> W{"BUFFER_STALLED_ERROR?<br/>(Lệch Timestamp PTS/DTS)"}
-    W -->|Phát hiện Treo| X["Stall Recovery Subsystem<br/>currentTime += 0.1s"]
+    W -->|"Phát hiện Treo"| X["Stall Recovery Subsystem<br/>currentTime += 0.1s"]
     X --> V
 
     V --> Y["Web Audio Processing Pipeline"]
@@ -158,16 +158,16 @@ DarkPlayerJS giải quyết vấn đề này tại tầng `pLoader` của HLS.js
 ```mermaid
 sequenceDiagram
     participant H as HLS Core
-    participant PL as pLoader (DarkPlayerJS)
+    participant PL as pLoader
     participant WC as Web Crypto Subtle
     participant S as CDN Upstream
 
     H->>PL: load(manifestContext)
     PL->>S: GET /hls.m3u8 (qua Proxy)
-    S-->>PL: Phản hồi Text (#ENC-AESGCM iv=... Base64)
+    S-->>PL: Phản hồi Text (ENC-AESGCM Base64)
     PL->>WC: importKey('raw', kX, 'AES-GCM')
-    PL->>WC: decrypt({AES-GCM, iv, tagLength: 128})
-    WC-->>PL: Plaintext M3U8 (#EXTM3U #EXTINF...)
+    PL->>WC: decrypt(AES-GCM, iv, tagLength 128)
+    WC-->>PL: Plaintext M3U8 (EXTM3U EXTINF)
     PL-->>H: onSuccess(Plaintext M3U8)
 ```
 
@@ -220,9 +220,9 @@ DarkPlayerJS triển khai cơ chế lắng nghe trạng thái lỗi bộ đệm 
 ```mermaid
 stateDiagram-v2
     [*] --> PLAYING: Phát bình thường
-    PLAYING --> STALLED: BUFFER_STALLED_ERROR (Lệch PTS/DTS)
+    PLAYING --> STALLED: BUFFER_STALLED_ERROR - Lệch PTS và DTS
     STALLED --> EVAL_RECOVERY: Kiểm tra options.stallRecovery == true
-    EVAL_RECOVERY --> NUDGE: Thực hiện vi điều chỉnh (+0.1s)
+    EVAL_RECOVERY --> NUDGE: Thực hiện vi điều chỉnh +0.1s
     NUDGE --> PLAYING: Playhead vượt qua điểm đứt gãy, tiếp tục phát
     EVAL_RECOVERY --> FATAL: stallRecovery == false
     FATAL --> RECOVER_MEDIA: recoverMediaError()
