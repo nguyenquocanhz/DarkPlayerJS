@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trảm Thần Phần 2 - Tập 15 [Vietsub & Thuyết Minh] | DarkPlayer Studio</title>
+  <meta name="referrer" content="unsafe-url">
+  <link rel="stylesheet" href="/darkplayer.css">
+  <link rel="stylesheet" href="./darkplayer/darkplayer.css">
+  <style>
+    :root {
+      --bg-dark: #07090e;
+      --bg-card: #0e121d;
+      --bg-card-hover: #151b2c;
+      --border-neon: #1e293b;
+      --primary: #00f2fe;
+      --secondary: #4facfe;
+      --accent: #ff007a;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: linear-gradient(180deg, #111726 0%, rgba(17, 23, 38, 0.6) 100%);
+      border-bottom: 1px solid var(--border-neon);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(10px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: #fff;
+    }
+
+    .brand span {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 16px 60px;
+      width: 100%;
+      flex: 1;
+    }
+
+    /* Video Frame Container */
+    .player-section {
+      background: #000;
+      border: 1px solid rgba(0, 242, 254, 0.2);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 242, 254, 0.1);
+      position: relative;
+    }
+
+    .player-wrapper {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%; /* 16:9 Aspect Ratio */
+      background: #050608;
+    }
+
+    .player-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* Controls Bar below player */
+    .player-meta {
+      padding: 18px 24px;
+      background: var(--bg-card);
+      border-top: 1px solid var(--border-neon);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .movie-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .movie-sub {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .badge-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      background: rgba(16, 185, 129, 0.15);
+      color: #10b981;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .badge-status::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+    }
+
+    /* Switch Tabs & Server selector */
+    .server-panel {
+      margin-top: 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-neon);
+      border-radius: 14px;
+      padding: 20px 24px;
+    }
+
+    .panel-header {
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .tab-group {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 12px 18px;
+      font-size: 15px;
+      font-weight: 700;
+      border-radius: 10px;
+      cursor: pointer;
+      border: 1px solid var(--border-neon);
+      background: var(--bg-dark);
+      color: var(--text-muted);
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .tab-btn:hover {
+      background: var(--bg-card-hover);
+      color: #fff;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(0, 242, 254, 0.2) 0%, rgba(79, 172, 254, 0.2) 100%);
+      border-color: var(--primary);
+      color: #fff;
+      box-shadow: 0 0 15px rgba(0, 242, 254, 0.25);
+    }
+
+    .server-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+
+    .server-btn {
+      padding: 12px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 1px solid var(--border-neon);
+      background: rgba(14, 18, 29, 0.8);
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.2s;
+    }
+
+    .server-btn:hover {
+      border-color: var(--primary);
+      background: var(--bg-card-hover);
+      transform: translateY(-2px);
+    }
+
+    .server-btn.active {
+      background: linear-gradient(135deg, #0052d4, #4364f7, #6fb1fc);
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 4px 15px rgba(67, 100, 247, 0.4);
+    }
+
+    /* Rule Compliance for Dark Mode Select Elements */
+    select,
+    select option,
+    select.dark-select,
+    select.dark-select option {
+      background-color: var(--bg-card) !important;
+      color: var(--text-main) !important;
+    }
+
+    /* Explanation Accordion */
+    .info-box {
+      margin-top: 24px;
+      background: rgba(15, 23, 42, 0.5);
+      border: 1px dashed var(--border-neon);
+      border-radius: 12px;
+      padding: 16px 20px;
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .info-box strong {
+      color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+      </svg>
+      <span>DarkPlayer</span> Studio Demo
+    </div>
+    <div class="badge-status">Anti-Detect Iframe Active</div>
+  </header>
+
+  <div class="container">
+    <!-- Player Wrapper -->
+    <div class="player-section">
+      <div class="player-wrapper">
+        <iframe 
+          id="player-frame" 
+          src="https://streamfree.vip/embed/v/58maO8nW" 
+          referrerpolicy="unsafe-url" 
+          allow="autoplay; fullscreen; encrypted-media; picture-in-picture" 
+          allowfullscreen>
+        </iframe>
+      </div>
+
+      <div class="player-meta">
+        <div>
+          <h1 class="movie-title" id="display-title">Trảm Thần Phần 2 - Tập 15 [Vietsub]</h1>
+          <p class="movie-sub">Nguồn: HHKUNGFU • Server: 1080P V2 (Pro CDN)</p>
+        </div>
+        <div>
+          <button class="server-btn" onclick="reloadPlayer()" style="display:inline-flex; width:auto; padding:8px 16px;">
+            🔄 Tải lại Player
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Server Controls Panel -->
+    <div class="server-panel">
+      <div class="panel-header">
+        <span>Chọn phiên bản âm thanh / phụ đề</span>
+        <span id="current-endpoint" style="font-size:11px; text-transform:none; color:var(--primary);">embed/v/58maO8nW</span>
+      </div>
+
+      <!-- Tab Buttons: Vietsub vs Thuyết Minh -->
+      <div class="tab-group">
+        <button class="tab-btn active" id="tab-vietsub" onclick="switchLanguage('vietsub')">
+          🔥 BẢN VIETSUB
+        </button>
+        <button class="tab-btn" id="tab-thuyetminh" onclick="switchLanguage('thuyetminh')">
+          🎙️ BẢN THUYẾT MINH
+        </button>
+      </div>
+
+      <div class="panel-header">
+        <span>Chọn cụm máy chủ truyền tải</span>
+      </div>
+
+      <!-- Server Buttons List -->
+      <div class="server-list" id="server-buttons">
+        <!-- Rendered dynamically via JS -->
+      </div>
+    </div>
+
+    <!-- Info box explaining the bypass -->
+    <div class="info-box">
+      🛡️ <strong>Cơ chế Anti-Detect trong Demo này:</strong><br>
+      • <strong>Vượt lỗi -2 (Chỉ phát trong iframe):</strong> Tải trực tiếp trong container `&lt;iframe&gt;` với thuộc tính `referrerpolicy="unsafe-url"`.<br>
+      • <strong>Vượt lỗi -3 (DevTools Detector):</strong> Khi mở trong trình duyệt Chrome thông thường (không bật F12 console), thư viện `disable-devtool` của player sẽ ở trạng thái an toàn và không kích hoạt bẫy khóa video.<br>
+      • <strong>Chấp thuận Host Localhost:</strong> Máy chủ `streamfree.vip` hỗ trợ hợp lệ `Referer: http://localhost:5050/` tương đương với domain đối tác `hhkungfu.ee`.
+    </div>
+  </div>
+
+  <script>
+    const SERVERS_DATA = {
+      vietsub: [
+        { name: "1080P V2 (Pro - Nhanh nhất)", url: "https://streamfree.vip/embed/v/58maO8nW", tag: "1080P" },
+        { name: "1080P V1 (TikTik CDN)", url: "https://streamfree.vip/embed/vt/58maO8nW", tag: "1080P" },
+        { name: "4K V2 (Vip4K V2)", url: "https://streamfree.vip/embed/v/hzkp70lC", tag: "4K" },
+        { name: "4K V1 (Vip4K V1)", url: "https://streamfree.vip/embed/vt/hzkp70lC", tag: "4K" }
+      ],
+      thuyetminh: [
+        { name: "1080P V2 (Pro - Nhanh nhất)", url: "https://streamfree.vip/embed/v/FJxU97vv", tag: "1080P" },
+        { name: "1080P V1 (TikTik CDN)", url: "https://streamfree.vip/embed/vt/FJxU97vv", tag: "1080P" },
+        { name: "4K V2 (Vip4K V2)", url: "https://streamfree.vip/embed/v/rbwSieGo", tag: "4K" },
+        { name: "4K V1 (Vip4K V1)", url: "https://streamfree.vip/embed/vt/rbwSieGo", tag: "4K" }
+      ]
+    };
+
+    let currentLang = 'vietsub';
+    let currentServerIdx = 0;
+
+    function renderServers() {
+      const container = document.getElementById('server-buttons');
+      container.innerHTML = '';
+
+      const servers = SERVERS_DATA[currentLang];
+      servers.forEach((srv, idx) => {
+        const btn = document.createElement('button');
+        btn.className = `server-btn ${idx === currentServerIdx ? 'active' : ''}`;
+        btn.innerHTML = `
+          <span>${srv.name}</span>
+          <span style="opacity:0.7; font-size:11px;">[${srv.tag}]</span>
+        `;
+        btn.onclick = () => selectServer(idx);
+        container.appendChild(btn);
+      });
+    }
+
+    function selectServer(idx) {
+      currentServerIdx = idx;
+      renderServers();
+
+      const current = SERVERS_DATA[currentLang][currentServerIdx];
+      const frame = document.getElementById('player-frame');
+      frame.src = current.url;
+
+      document.getElementById('current-endpoint').textContent = current.url.replace('https://streamfree.vip/', '');
+      document.querySelector('.movie-sub').textContent = `Nguồn: HHKUNGFU • Server: ${current.name}`;
+    }
+
+    function switchLanguage(lang) {
+      currentLang = lang;
+      currentServerIdx = 0;
+
+      document.getElementById('tab-vietsub').classList.toggle('active', lang === 'vietsub');
+      document.getElementById('tab-thuyetminh').classList.toggle('active', lang === 'thuyetminh');
+
+      const titleEl = document.getElementById('display-title');
+      if (lang === 'vietsub') {
+        titleEl.textContent = 'Trảm Thần Phần 2 - Tập 15 [Vietsub]';
+      } else {
+        titleEl.textContent = 'Trảm Thần Phần 2 - Tập 15 [Thuyết Minh]';
+      }
+
+      renderServers();
+      selectServer(0);
+    }
+
+    function reloadPlayer() {
+      const frame = document.getElementById('player-frame');
+      const currentSrc = frame.src;
+      frame.src = '';
+      setTimeout(() => { frame.src = currentSrc; }, 200);
+    }
+
+    // Khởi tạo hiển thị
+    renderServers();
+  </script>
+</body>
+</html>
